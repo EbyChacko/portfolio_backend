@@ -31,17 +31,31 @@ class ContactMessageView(APIView):
         return Response({'code': 400, 'message': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def send_contact_email(user_email, message):
+def send_contact_email(user_email, user_name, message):
+    # Email to the admin or service provider
     send_mail(
         subject="New Contact Form Submission",
-        message=f"You received a new message:\n\n{message}",
+        message=f"""Hello Eby,
+        You received a new message from {user_name}
+        Message : {message}
+        Email : {user_email}""",
         from_email=settings.EMAIL_HOST_USER,
-        recipient_list=['cybe1990@gmail.com.com'],
+        recipient_list=['cybe1990@gmail.com'],
     )
 
+    # Email to the user
     send_mail(
         subject="Thank you for your message",
-        message="We received your message and will get back to you soon! Thank you",
+        message=f"""Hello {user_name},
+
+        We received your message and will get back to you soon!
+
+        Thank you.
+
+        Best Regards,
+        Eby Chacko
+        Mob: +35389 233 6291
+        """,
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[user_email],
     )
