@@ -11,9 +11,16 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+from dotenv import load_dotenv
 import os
+import django_heroku
 import dj_database_url
+import environ
 
+# Initialize environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +35,7 @@ SECRET_KEY = 'django-insecure-s+@$eu!y!@i&4*+5!kw1x1s$3)e(@eeh+_k+bw7=(c1vj)n5&h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['eby-portfolio-backend-8ae1b564b297.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['eby-portfolio-backend-8ae1b564b297.herokuapp.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -80,8 +87,15 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'portfolio',
+        'USER': env("DB_USER"),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
+         'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
@@ -130,6 +144,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Heroku Postgres DB
 DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
